@@ -1,14 +1,13 @@
 import EventContent from '@/components/event-detail/event-content';
 import EventLogistics from '@/components/event-detail/event-logistics';
 import EventSummary from '@/components/event-detail/event-summary';
-import { getEventById } from '@/styles/dummy-data';
-import { useRouter } from 'next/router';
+import { getAllEvents, getEventById } from '@/helpers/api-util';
 import React from 'react';
 
-function EventsDetailsPage() {
-  const router = useRouter();
-  const eventId = router.query.eventId;
-  const event = getEventById(eventId);
+function EventsDetailsPage(props) {
+  // const router = useRouter();
+  // const eventId = router.query.eventId;
+  const event = props.selectedEvent;
   if (!event) {
     return <p>No event found </p>;
   }
@@ -29,4 +28,25 @@ function EventsDetailsPage() {
   );
 }
 
+// `getStaticPaths` requires using `getStaticProps`
+export async function getStaticProps(context) {
+  const eventId = context.params.eventId;
+  const event = await getEventById(eventId);
+  return {
+    // Passed to the page component as props
+    props: {
+      selectedEvent: event,
+    },
+  };
+}
+
+export async function getStaticPaths() {
+  const events = await getAllEvents();
+  const paths = events.map((event) => ({ params: { eventId: event.id } }));
+  return {
+    //paths: [{ params: { id: '1' } }, { params: { id: '2' } }],
+    paths: paths,
+    fallback: false, // can also be true or 'blocking'
+  };
+}
 export default EventsDetailsPage;
