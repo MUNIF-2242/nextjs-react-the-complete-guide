@@ -1,7 +1,7 @@
 import EventContent from '@/components/event-detail/event-content';
 import EventLogistics from '@/components/event-detail/event-logistics';
 import EventSummary from '@/components/event-detail/event-summary';
-import { getAllEvents, getEventById } from '@/helpers/api-util';
+import { getFeaturedEvents, getEventById } from '@/helpers/api-util';
 import React from 'react';
 
 function EventsDetailsPage(props) {
@@ -9,7 +9,7 @@ function EventsDetailsPage(props) {
   // const eventId = router.query.eventId;
   const event = props.selectedEvent;
   if (!event) {
-    return <p>No event found </p>;
+    return <div className='center'>Loading... </div>;
   }
   return (
     <>
@@ -36,17 +36,18 @@ export async function getStaticProps(context) {
     // Passed to the page component as props
     props: {
       selectedEvent: event,
+      revalidate: 30,
     },
   };
 }
 
 export async function getStaticPaths() {
-  const events = await getAllEvents();
+  const events = await getFeaturedEvents();
   const paths = events.map((event) => ({ params: { eventId: event.id } }));
   return {
     //paths: [{ params: { id: '1' } }, { params: { id: '2' } }],
     paths: paths,
-    fallback: false, // can also be true or 'blocking'
+    fallback: 'blocking', // can also be true or 'blocking'
   };
 }
 export default EventsDetailsPage;
