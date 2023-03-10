@@ -36,8 +36,8 @@ export async function getStaticProps(context) {
     // Passed to the page component as props
     props: {
       selectedEvent: event,
-      revalidate: 30,
     },
+    revalidate: 30,
   };
 }
 
